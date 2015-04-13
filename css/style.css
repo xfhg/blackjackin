@@ -1,0 +1,25 @@
+ body{
+     background: url('/img/back.png');
+   }
+
+   .hand{
+    height:auto;
+    overflow: auto;
+  }
+
+  .interface{
+    height:auto;
+    overflow: auto;
+    margin: 25px 0px;
+    background: rgba(0,0,0,0.1);
+    border-radius: 5px;
+    padding: 10px;
+  }
+
+  .card{
+   display: inline-block;
+   height: 185px;
+   width: 132px;
+   float: left;
+
+ }
