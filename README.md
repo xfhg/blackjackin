@@ -10,7 +10,11 @@ This guide is a fast paced tutorial but the annotated source code covers all the
 
 Make sure you got through the idea of <a href="http://facebook.github.io/react/docs/thinking-in-react.html" target="_blank">Thinking in React</a>, we'll be building a **Blackjack App** completely operational but simplified for the sake of brevity.
 
+> <a href="http://edgeuplink.net/lab/sandbox/blackjackin" target="_blank">Demo</a> of what we'll end up.
+
 **Note:** There’s code fragments sprinkled throughout this post. Before you proceed fork/download the source code for the final blackjack application, at <a href="https://github.com/edgeuplink/blackjackin" target=_blank >our repository</a>. The full annotated source include extra examples (Mixins, CSS in JSX, ...) and stuff not called in the article.
+
+<iframe src="https://ghbtns.com/github-btn.html?user=edgeuplink&repo=blackjackin&type=fork&count=false&size=large" frameborder="0" scrolling="0" width="158px" height="30px" style="margin:0 250px"></iframe>
 
 <hr></hr>
 
@@ -29,6 +33,8 @@ React is a UI library developed to facilitate the creation of *interactive*, *st
 So, let's get it started ! Our App will be able to spin multiple tables and each *Table* will have multiple *Hands* displaying stacks of *Cards* playing with the dealer *Hand*. For each table there is an *Interface* (deal/hit/stand) for each player and a component for the *Outcome* (score) of the playing hand.
 
 > ##Step 1: break the UI into a component hierarchy
+
+First of all it’s wise to follow the **single responsibility principle** and ideally, design your components to be responsible for only one thing. When you start to feel you are not doing it right anymore with your component, you should consider breaking it down into smaller ones.
 
 [![reactflow.png](https://d23f6h5jpj26xu.cloudfront.net/6k7yx6pxorpw_small.png)](http://img.svbtle.com/6k7yx6pxorpw.png)
 
@@ -175,6 +181,8 @@ Can you implement a static version of the game Table **using props** resembling 
 
 Okay okay, <a href="https://github.com/edgeuplink/blackjackin" target=_blank >just download/fork the complete version of the app</a> (if you haven't already) and continue to follow the article.
 
+<iframe src="https://ghbtns.com/github-btn.html?user=edgeuplink&repo=blackjackin&type=fork&count=false&size=large" frameborder="0" scrolling="0" width="158px" height="30px" style="margin:0 250px"></iframe>
+
 <hr></hr>
 
 >**Step 3: Identify the minimal (but complete) representation of UI state**
@@ -252,35 +260,35 @@ The first is used by the component to compute the Hand score based on the provid
 ```js
 handleHitButton : function(){
 
-	//check deck size
-	if(this.state.deck.length < 5){
-		this.state.deck = _.shuffle(this.props.deck);
-	}
+  //check deck size
+  if(this.state.deck.length < 5){
+    this.state.deck = _.shuffle(this.props.deck);
+  }
 
-	// we shuffle every time so you dont cheat by checking component state :D
-	var shuffled = _.shuffle(this.state.deck);
+  // we shuffle every time so you dont cheat by checking component state :D
+  var shuffled = _.shuffle(this.state.deck);
 
-	// deal a card
-	this.state.player.push(shuffled.pop());
+  // deal a card
+  this.state.player.push(shuffled.pop());
 
-	// compute hand score
-	this.state.playerscore = this.handScore(this.state.player);
+  // compute hand score
+  this.state.playerscore = this.handScore(this.state.player);
 
-	// compute game status
-	if(this.state.playerscore < 21 && this.state.player.length == 5){
-	  // five card charlie
-	  this.state.status = "win";
-	}
-	if(this.state.playerscore >21){
-		this.state.status = "lose";
-	}
-	
-	// update state accordingly
-	this.setState({
-		player :  this.state.player,
-		deck : shuffled,
-		status : this.state.status
-	});
+  // compute game status
+  if(this.state.playerscore < 21 && this.state.player.length == 5){
+    // five card charlie
+    this.state.status = "win";
+  }
+  if(this.state.playerscore >21){
+    this.state.status = "lose";
+  }
+  
+  // update state accordingly
+  this.setState({
+    player :  this.state.player,
+    deck : shuffled,
+    status : this.state.status
+  });
 
 },
 ```
@@ -302,13 +310,24 @@ Hope you find this article and the source useful for your path in React.
 
 <hr></hr>
 
+>**Fork our simple version of the application and send some pull requests with your optimisations.** 
 >**Next iteration of this article will include:** 
 
 - code review optimisations
 - multiple players at the table using <a href="https://facebook.github.io/react/docs/more-about-refs.html" target=_blank>React refs</a>
-- websocket implementation for mano-a-mano blackjackin
-- betting some moneys
-- double-downs and splits
-- your optimisations :)
+- Websocket implementation for *mano-a-mano* blackjackin
+- Betting some moneys
+- Double-downs and Splits
+- Bundling with Webpack and Babel
 
->**Fork our simple version of the application and send some pull requests with your optimisations.** 
+<iframe src="https://ghbtns.com/github-btn.html?user=edgeuplink&repo=blackjackin&type=star&count=false&size=large" frameborder="0" scrolling="0" width="160px" height="30px" style="margin: 0 250px"></iframe>
+
+<hr></hr>
+
+> **☵☲ <a href="https://www.coinbase.com/edge" target=_blank>Buy me a beer</a> ☵☲** hked by Flávio HG
+
+
+THE BEER-WARE LICENSE (Revision 42)
+
+As long as you retain this notice you can do whatever you want with this stuff. If we meet some day, and you think this stuff is worth it, you can buy me a beer in return.
+ 
