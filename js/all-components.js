@@ -60,33 +60,15 @@ var CascadedMixin = {
 var Card = React.createClass({
 
     render: function() {
-
+        var bgUrl = (this.props.hidden)
+            ? 'url(img/hidden.png)'
+            : 'url(img/' + this.props.face + '.png)';
         /* in react we pass the css properties as an object with camelCase variables referring to the respective CSS variables */
-        var cardUp = {
-            backgroundImage: 'url(img/' + this.props.face + '.png)',
-            
-        };
-        var cardDown ={
-            backgroundImage: 'url(img/hidden.png)',
+        var cardStyle = {backgroundImage: bgUrl};
 
-        };
-
-        if (this.props.hidden){
-
-            /* the property class must be declared as className and css style is an object */
-            return (
-                <div className='card' style={cardDown}/>
-
-            );
-
-        }else{
-            return (
-                <div className='card' style={cardUp}/>
-
-            );
-        }
-
-
+        return (
+            <div className='card' style={cardStyle}/>
+        );
     }
 
 });
@@ -214,28 +196,18 @@ var Table = React.createClass({
                 score -= 10;
                 aces -=1;
             }
-            return score;
-
-        }else{
-            return score;
         }
 
+        return score;
     },
 
     /* function to handle the event of user clicking the Deal button */
     handleDealButton :function(){
 
         /* this variables are restrained to this closure and modifying state variables without the setState is prohibited */
-        var deck    = this.state.deck;
-
+        var deck        = this.state.deck;
         var playerhand  = [];
-        var playerscore = 0;
-
         var dealerhand  = [];
-        var dealerscore = 0;
-
-        //popped card out of the deck
-        var newcard  = {};
 
         //check deck size to see if we need to shuffle a new deck
         if(deck.length < 5){
@@ -266,6 +238,9 @@ var Table = React.createClass({
     /* function to handle the event of user clicking the Hit button */
     handleHitButton : function(){
 
+        var newStatus = this.state.status;
+        var playerHand = this.state.player;
+
         // check deck size to see if we need to shuffle a new deck
         if(this.state.deck.length < 5){
             this.state.deck = _.shuffle(this.props.deck);
@@ -275,25 +250,22 @@ var Table = React.createClass({
         var shuffled = _.shuffle(this.state.deck);
 
         // deal the card
-        this.state.player.push(shuffled.pop());
+        playerHand.push(shuffled.pop());
 
-        // compute score
-        this.state.playerscore = this.handScore(this.state.player);
+        var newPlayerscore = this.handScore(playerHand);
 
-        // compute game status
-        if(this.state.playerscore < 21 && this.state.player.length == 5){
-            // five card charlie
-            this.state.status = "win";
-        }
+        // five card charlie
+        if(newPlayerscore < 21 && playerHand.length == 5)
+            newStatus = "win";
+        if(newPlayerscore > 21)
+            newStatus = "lose";
 
-        if(this.state.playerscore >21){
-            this.state.status = "lose";
-        }
         // set the updates
         this.setState({
-            player :  this.state.player,
+            player :  playerHand,
+            playerscore: newPlayerscore,
             deck : shuffled,
-            status : this.state.status
+            status : newStatus
         });
 
     },
@@ -302,44 +274,41 @@ var Table = React.createClass({
     handleStandButton :function(){
 
         // check deck size to see if we need to shuffle a new deck
-        if(this.state.deck.length < 5){
-            this.state.deck = _.shuffle(this.props.deck);
+        var dealerHand = this.state.dealer;
+        var deck = this.state.deck;
+        if(deck.length < 5) {
+            deck = _.shuffle(this.props.deck);
         }
 
         // we shuffle every time so you don't cheat by checking component state :D
-        var shuffled = _.shuffle(this.state.deck);
+        var shuffled = _.shuffle(deck);
 
         // update scores for the interface component
-        this.state.dealerscore = this.handScore(this.state.dealer);
-        this.state.playerscore = this.handScore(this.state.player);
+        var dealerScore = this.handScore(dealerHand);
+        var playerScore = this.handScore(this.state.player);
+        var dealerHasCharlie = false;
 
         // compute game status while dealing cards to the dealer
-        while (this.state.dealerscore < this.state.playerscore || this.state.dealerscore <= 17) {
+        while (dealerScore < playerScore || dealerScore <= 17) {
 
             // deal a card
-            this.state.dealer.push(shuffled.pop());
-            // compute the score
-            this.state.dealerscore = this.handScore(this.state.dealer);
+            dealerHand.push(shuffled.pop());
+            dealerScore = this.handScore(dealerHand);
 
-            if(this.state.dealerscore < 21 && this.state.dealer.length == 5){
+            if(dealerScore < 21 && dealerHand.length == 5){
                 // five card charlie
-                this.state.status = "lose";
+                dealerHasCharlie = true;
                 break;
             }
 
         }
-// compute game status
-        if(this.state.dealerscore >21){
-            this.state.status = "win";
-        }else{
-            this.state.status = "lose";
-        }
 
-// update the state variables accordingly
+        // update the state variables accordingly
         this.setState({
-            dealer :  this.state.dealer,
+            dealer :  dealerHand,
             deck : shuffled,
-            status : this.state.status
+            // compute game status
+            status : (dealerScore < 21 || dealerHasCharlie) ? 'lose' : 'win'
         });
 
     },
